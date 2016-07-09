@@ -22,7 +22,7 @@ BitArray.prototype.set = function (pos, bool)
     pos = pos % 32;
     subArr.set(pos, bool);
 };
-BitArray.prototype.toggle = function (pos)  // -> Boolean
+BitArray.prototype.toggle = function (pos)  // -> Boolean (new value)
 {
     var subArr = this._subArrayForPos(pos, true);
     pos = pos % 32;
@@ -42,6 +42,7 @@ BitArray.prototype.toString = function ()
     return str;
 };
 
+// BitArray Private Methods
 BitArray.prototype._subArrayForPos = function (pos, upsert)
 {
     if (typeof pos !== "number" || pos < 0) { return null; }
@@ -55,12 +56,12 @@ BitArray.prototype._subArrayForPos = function (pos, upsert)
     return this._subArrays[pos];
 };
 
-
+// Base BitArray Used To Create Main BitArray
 function BitArray32 ()
 {
     this._num = 0;
 }
-BitArray32.prototype.get = function (pos)
+BitArray32.prototype.get = function (pos)  // -> Boolean
 {
     this._validateInput(pos);
     return !!(this._numForBitAtPos(pos) & this._num);
@@ -74,22 +75,12 @@ BitArray32.prototype.set = function (pos, bool)
         this._num = this._num ^ this._numForBitAtPos(pos);
     }
 };
-BitArray32.prototype.toggle = function (pos)
+BitArray32.prototype.toggle = function (pos)  // -> Boolean (new value)
 {
     this._validateInput(pos);
     var bool = this.get(pos);
     this.set(pos, !bool);
     return !bool;
-};
-BitArray32.prototype._validateInput = function (num)
-{
-    if (typeof num !== "number" || num >= 32 || num < 0) { 
-        throw Error("Out Of Range");
-    }
-};
-BitArray32.prototype._numForBitAtPos = function (pos)
-{
-    return Math.pow(2, 31-pos);
 };
 BitArray32.prototype.toString = function ()
 {
@@ -100,6 +91,19 @@ BitArray32.prototype.toString = function ()
     return str;
 };
 
+// BitArray32 Private Methods
+BitArray32.prototype._validateInput = function (num)
+{
+    if (typeof num !== "number" || num >= 32 || num < 0) { 
+        throw Error("Out Of Range");
+    }
+};
+BitArray32.prototype._numForBitAtPos = function (pos)
+{
+    return Math.pow(2, 31-pos);
+};
+
+// Module Exports
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BitArray;
 }
